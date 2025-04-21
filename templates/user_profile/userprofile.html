@@ -1,0 +1,87 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="profile-container" style="text-align: center; margin-top: 10px; width: 500px; margin-left: auto; margin-right: auto; display: block; top: 50%; left: 50%;">
+    <h3 class="text-left" style="color: #013553;">Profile</h3>
+
+    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+        <label style="display: flex; align-items: center; gap: 5px;">
+            <a style="color: red;" href="{% url 'logout' %}">
+                Log Out
+                <img style="height: 20px; width: 20px; " src="https://img.icons8.com/?size=100&id=voArpXRj4dc5&format=png&color=FF0000"/>
+             </a>
+        </label>
+    </div>
+        
+    <!-- Profile Picture -->
+    <div style="margin: 20px;">
+        <!-- Check if the user has uploaded a profile picture -->
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" 
+                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+        {% else %}
+            <!-- Static default profile picture -->
+            <img src="https://img.icons8.com/?size=100&id=0PXqKKGn88m8&format=png&color=000000" alt="Profile Icon" 
+                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+        {% endif %}
+    </div>
+
+    <!-- User Details -->
+    <div>
+        <p style="font-weight: bold;">Full Name: {{ user.get_full_name }}</p>
+        <p>@{{ user.username }}</p> 
+        {% if user.is_superuser %}
+        <span 
+            style="height: fit-content; width: fit-content; display: inline-block; padding: 2.5px 5px; border-radius: 5px; background-color: #058407; color: #ffffff;">
+            Super Admin</span>
+        {% elif user.is_staff %}
+        <span 
+        style="height: fit-content; width: fit-content; display: inline-block; padding: 2.5px 5px; border-radius: 5px; background-color: #b5b800; color: #ffffff;">
+            Admin</span>
+        {% endif %}
+
+    </div>
+
+    <div style="margin-top: 30px;">
+        <p style="font-weight: bold; font-size: 13pt;">Selected Categories</p>
+        <div style="text-align: center;">
+            {% for category in user.profile.categories.all %}
+                <span style="
+                    display: inline-block;
+                    background-color: #d9f0ff; /* Light blue background */
+                    color: #000; /* Text color */
+                    padding: 5px 10px;
+                    margin: 5px;
+                    border-radius: 15px;
+                    border: 0.5px solid #0000004f;
+                    font-size: 14px;
+                ">
+                    {{ category.category_name }}
+                </span>
+            {% empty %}
+                <p>No categories selected.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+
+    <!-- Action Buttons -->
+    <div style="text-align: center; margin-top: 25px; margin-bottom: 25px;">
+        <!--Edit Profile-->
+        <a href="{% url 'editprofile' %}" 
+           class="btn btn-warning" script="hover"
+           style="margin-right: 10px; border-radius: 5px;">
+            Edit Profile
+        </a>
+        <!--Manage Categories-->
+        <a href="{% url 'managecategory' %}" 
+           class="btn btn-warning" 
+           style="margin-right: 10px; border-radius: 5px;">
+           Manage Categories
+        </a>
+        <br><br>
+        <a href="{% url 'change_password' %}">Change Password?</a>
+
+    </div>
+</div>
+{% endblock %}

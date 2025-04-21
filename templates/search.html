@@ -1,0 +1,32 @@
+{% extends './base/base.html' %}
+
+{% block content %}
+
+<h3 style="letter-spacing: 2px; color: #004268;">Search Keyword - {{ keyword }}</h3>
+<main role="main" class="container p-0">
+  <div class="row">
+    <div class="col-md-8 blog-main">
+      {% for i in blogs %}
+      <div class="card border-50 mb-2" style="border-radius: 20px;">
+        <div class="row no-gutters">
+          <div class="col-md-4">
+            <a href="{% url 'blogs' i.slug %}">
+              <img src="{{ i.blog_image.url }}" class="card-img" style="border-radius: 20px;" alt="{{ i.title }}"></a>
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h3><a style="color: rgb(3, 135, 7);" href="{% url 'blogs' i.slug %}">{{ i.title }}</a></h3>
+              <small class="mb-1 text-muted">{{ i.created_at | timesince }} ago | {{ i.author }}</small>
+              <p class="card-text">{{ i.short_description | truncatewords:20 }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-muted">No recent articles available.</p>
+      {% endfor %}
+    </div>
+  </div>
+</main>
+
+{% endblock %}

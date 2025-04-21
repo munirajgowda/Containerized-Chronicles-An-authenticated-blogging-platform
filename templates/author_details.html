@@ -1,0 +1,44 @@
+{% extends './base/base.html' %}
+
+{% block content %}
+<div class="author-card" style="text-align: center; margin: 20px auto; width: 300px; border: 1px solid #ddd; border-radius: 10px; padding: 20px; background-color: #f9f9f9;">
+    
+    <!-- Back Button -->
+    <div style="text-align: left; margin-bottom: 20px;">
+        <a href="{% url 'blogs' blog_slug %}" style="text-decoration: none; color: #007bff;">
+            ← Back
+        </a>
+    </div>
+    
+    <!-- Profile Picture -->
+    <div style="margin-bottom: 20px;">
+        <img src="{{ profile_picture_url }}" alt="Author Picture" 
+             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+    </div>
+    
+    <!-- Author Details -->
+    <h4>{{ author.get_full_name }}</h4>
+    <p>@{{ author.username }}</p>
+    <p>
+        <strong>Email:</strong> 
+        <a href="mailto:{{ author.email }}?subject=Hello%20{{ author.get_full_name|urlencode }}&body=Hi%20{{ author.get_full_name|urlencode }}," 
+           style="color: #007bff; text-decoration: none;">
+           {{ author.email }}
+        </a>
+    </p>
+    
+<!-- Post Count -->
+<div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+    <div class="card border-default mb-2" style="max-width: 12rem;">
+        <div class="card-header text-center py-1">
+            <h6 class="text-dark mb-0">Posts</h6>
+        </div>
+        <a href="{% url 'author_posts' author.username %}" style="text-decoration: none; cursor: pointer;">
+        <div class="card-body text-dark py-2">
+                <h5 class="card-title text-center mb-0" style="font-size: 0.9rem; color:black;">{{ posts_uploaded }}</h5>
+            </div>
+        </a>
+    </div>
+</div>
+</div>
+{% endblock %}

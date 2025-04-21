@@ -1,0 +1,15 @@
+asgiref
+crispy-bootstrap4
+Django
+django-crispy-forms
+pillow
+sqlparse
+tzdata
+gtts
+httpx
+googletrans
+translate
+celery
+redis
+django-ckeditor
+djangorestframework

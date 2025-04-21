@@ -1,0 +1,192 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Sidebar -->
+    {% include './leftsidebar.html' %}
+
+    <!-- Main Content Area -->
+    <div class="col-md-9">
+        <!-- My Blogs Section -->
+        <h3 style="color: #013553;">My Blogs</h3>
+        <a href="{% url 'add_posts' %}" class="btn btn-dark text-light float-right mb-2">Add New Blog</a>
+
+        <!-- My Blogs Search -->
+        <div class="col-4 float-right mb-2">
+            <form action="{% url 'search_posts' %}" method="GET">
+                <input type="hidden" name="scope" value="my_blogs" />
+                <div class="input-group">
+                    <input class="form-control" name="keyword" type="text" placeholder="Search My Blogs..." />
+                    <button type="submit" class="btn btn-dark text-light">
+                        <img src="https://img.icons8.com/?size=100&id=14079&format=png&color=ffffff" style="width: 20px; height: 20px;">
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- My Blogs Category Filter -->
+        <div class="col-2.5 float-right mb-2">
+            <div class="dropdown">
+                <button class="btn btn-dark text-light dropdown-toggle" type="button" id="myBlogsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filter by Category
+                </button>
+                <div class="dropdown-menu" aria-labelledby="myBlogsDropdown">
+                    {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'filter_by_category' category.id %}">
+                            {{ category.category_name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% if my_blogs %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Featured</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for blog in my_blogs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'blogs' blog.slug %}" style="color: #1c2023;">{{ blog.title }}</a></td>
+                    <td>{{ blog.category }}</td>
+                    <td>{{ blog.status }}</td>
+                    <td>
+                        {% if blog.is_featured %}
+                        <i class="fa fa-check text-success"></i>
+                        {% else %}
+                        <i class="fa fa-times text-danger"></i>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'edit_posts' blog.id %}"><i class="fa fa-edit text-success"></i></a>
+                        <a href="{% url 'delete_posts' blog.id %}"><i class="fa fa-trash text-danger"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Featured</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="8" class="text-center text-muted">
+                        No blogs found.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+        
+        <!-- All Blogs Section (Superuser) -->
+        {% if request.user.is_superuser %}
+        <h3>All Blogs</h3>
+
+        <!-- All Blogs Search -->
+        <div class="col-4 float-right mb-2">
+            <form action="{% url 'search_posts' %}" method="GET">
+                <input type="hidden" name="scope" value="all_blogs" />
+                <div class="input-group">
+                    <input class="form-control" name="keyword" type="text" placeholder="Search All Blogs..." />
+                    <button type="submit" class="btn btn-dark text-light">
+                        <img src="https://img.icons8.com/?size=100&id=14079&format=png&color=ffffff" style="width: 20px; height: 20px;">
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- All Blogs Category Filter -->
+        <div class="col-2.5 float-right mb-2">
+            <div class="dropdown">
+                <button class="btn btn-dark text-light dropdown-toggle" type="button" id="allBlogsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filter by Category
+                </button>
+                <div class="dropdown-menu" aria-labelledby="allBlogsDropdown">
+                    {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'filter_by_category' category.id %}">
+                            {{ category.category_name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% if blogs %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Author</th>
+                    <th>Status</th>
+                    <th>Featured</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for blog in blogs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'blogs' blog.slug %}" style="color: #1c2023;">{{ blog.title }}</a></td>
+                    <td>{{ blog.category }}</td>
+                    <td>{{ blog.author }}</td>
+                    <td>{{ blog.status }}</td>
+                    <td>
+                        {% if blog.is_featured %}
+                        <i class="fa fa-check text-success"></i>
+                        {% else %}
+                        <i class="fa fa-times text-danger"></i>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'edit_posts' blog.id %}"><i class="fa fa-edit text-success"></i></a>
+                        <a href="{% url 'delete_posts' blog.id %}"><i class="fa fa-trash text-danger"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Author</th>
+                    <th>Status</th>
+                    <th>Featured</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="8" class="text-center text-muted">
+                        No blogs found.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

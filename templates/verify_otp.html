@@ -1,0 +1,42 @@
+{% extends './base/base.html' %}
+
+{% block content %}
+
+<h2 class="text-center">Verify OTP</h2>
+
+{% if not otp_sent %}
+    <!-- OTP has not been sent yet -->
+    <form method="post" action="{% url 'verify_otp' %}" style="width: 500px; margin: auto;">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="username_or_email">Enter your Username or Email:</label>
+            <input type="text" name="username_or_email" id="username_or_email" required class="form-control" placeholder="Username or Email">
+        </div>
+        
+        <button type="submit" name="send_otp" class="btn btn-warning">Send OTP</button>
+    </form>
+    
+{% else %}
+    <!-- OTP has been sent, prompt for OTP verification -->
+    <form method="post" action="{% url 'verify_otp' %}" style="width: 500px; margin: auto;">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="otp">Enter OTP sent to {{ email }}:</label>
+            <input type="text" name="otp" id="otp" required class="form-control">
+        </div>
+        
+        <button type="submit" name="verify_otp" class="btn btn-warning">Verify OTP</button>
+    </form>
+{% endif %}
+
+<!-- Display any messages -->
+{% for message in messages %}
+<br><br>
+<div class="text-center">
+    <p class="alert alert-info">{{ message }}</p>
+</div>
+{% endfor %}
+
+{% endblock %}

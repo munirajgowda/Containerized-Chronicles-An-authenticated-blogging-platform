@@ -1,0 +1,248 @@
+{% extends './base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+            <article>
+                <!-- Post Header -->
+                <header class="mb-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="fw-bolder mb-1">{{ single_post.title }}</h1>
+                        <div class="text-muted fst-italic mb-2">
+                            Posted on {{ single_post.created_at }} by 
+                             <a href="{% url 'author-details' single_post.author.id single_post.slug %}">
+                                {{ single_post.author.username }}
+                                </a>                           
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <a class="badge bg-warning text-decoration-none text-light mx-2" href="">{{ single_post.category }}</a>
+                        <!-- Audio Button -->
+                        <button id="playPauseButton" onclick="playAudio('{{ single_post.id }}')" title="Listen to this blog" class="btn btn-outline-secondary btn-sm mx-1" style="border: none; background: none;">
+                            <img id="playPauseIcon" src="https://img.icons8.com/ios-filled/50/000000/speaker.png" alt="Listen" style="width: 20px; height: 20px;">
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Post Body -->
+                <section class="mb-5">
+                    <p class="fs-5 mb-4">{{ single_post.short_description }}</p>
+                    <figure class="mb-4">
+                        <img class="img-fluid rounded" src="{{ single_post.blog_image.url }}" alt="Blog image" />
+                    </figure>
+                    <div>
+                        <!-- Render the blog content -->
+                        {{ single_post.blog_body|safe|linebreaksbr }}
+                    </div>
+                </section>
+
+                <!-- Comments Section -->
+                <h4>Comments({{ comment_count }})</h4>
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text mb-0">{{ comment }}</p>
+                            <span>
+                                <small>{{ comment.user }}</small>
+                                <small>{{ comment.created_at | timesince }} ago</small>
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No Comments Yet</p>
+                {% endif %}
+
+                <!-- Comment Form -->
+                <div class="form-group">
+                    {% if user.is_authenticated %}
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea name="comment" class="form-control" placeholder="Write your Comment"></textarea>
+                            <input type="submit" class="btn btn-primary mt-2">
+                        </div>
+                    </form>
+                    {% else %}
+                    <p>Please <a href="{% url 'login' %}">Login</a> to write a comment!</p>
+                    {% endif %}
+                </div>
+            </article>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Categories Card -->
+            <div class="card mb-4 p-3">
+                <h4 class="font-italic">Categories</h4>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <ul class="list-unstyled mb-0">
+                                {% for cat in categories %}
+                                <li><a href="{% url 'posts_by_category' cat.id %}">{{ cat.category_name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Posts Section -->
+            <section class="mb-5">
+                <div class="card mb-4 p-3">
+                    <h4 class="fw-bold">Related Posts</h4>
+                    {% if related_posts %}
+                    <main role="main" class="container p-0">
+                        <div class="row">
+                            {% for post in related_posts %}
+                            <div class="col-md-12">
+                                <div class="card border-50 mb-2" style="border-radius: 20px;">
+                                    <div class="row no-gutters">
+                                        <!-- Post Image Column -->
+                                        <div class="col-md-4" style="height: 100%;">
+                                            <a href="{% url 'post_detail' post.slug %}">
+                                                <img src="{{ post.blog_image.url }}" style="border-radius: 20px; object-fit: cover; height: 100%;" class="card-img" alt="{{ post.title }}">
+                                            </a>
+                                        </div>
+                                        <!-- Post Text Column -->
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                                    <a style="color: rgb(3, 135, 7);" href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+                                                </h5>
+                                                <small class="mb-1 text-muted">
+                                                    {{ post.created_at | timesince }} ago | {{ post.author }}
+                                                </small>
+                                                <p class="card-text" style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                                                    {{ post.short_description | truncatewords:30 }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </main>
+                    {% else %}
+                    <p>No related posts found.</p>
+                    {% endif %}
+                </div>
+            </section>           
+        </div>
+    </div>
+
+    <!-- Audio Alert Message -->
+    <div id="speakingAlert" class="alert alert-info fixed-bottom m-3" style="display: none; width: auto; left: 50%; transform: translateX(-50%);">
+        Loading... (Please wait, it may take a moment)
+    </div>
+</div>
+
+<!-- Modal for Author Info -->
+<div class="modal fade" id="authorModal" tabindex="-1" aria-labelledby="authorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="authorModalLabel">Author Info</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="authorDetails">
+                    <!-- Author details will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadAuthorInfo(authorId) {
+        fetch(`/authors/${authorId}/info/`)
+            .then(response => response.json())
+            .then(data => {
+                const authorDetails = document.getElementById("authorDetails");
+                authorDetails.innerHTML = `
+                    <div class="card">
+                        <img src="${data.profile_picture}" alt="${data.full_name}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">${data.full_name}</h5>
+                            <p class="card-text"><strong>Username:</strong> ${data.username}</p>
+                            <p class="card-text"><strong>Email:</strong> ${data.email}</p>
+                        </div>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error loading author details:', error);
+            });
+    }
+    
+    let audio = null;  // Global variable to track the audio instance
+    let isAudioLoaded = false; // Flag to track if audio is loaded
+
+    function playAudio(blogId) {
+        const buttonIcon = document.getElementById('playPauseIcon');
+        const playIconUrl = "https://img.icons8.com/ios-filled/50/000000/speaker.png";
+        const pauseIconUrl = "https://img.icons8.com/ios-filled/50/000000/pause.png";
+        const speakingAlert = document.getElementById("speakingAlert");
+
+        // Show the speaking alert message when the user presses the button
+        speakingAlert.style.display = "block";
+
+        // If the audio is not loaded yet, preload it
+        if (!isAudioLoaded) {
+            fetch(`/blogs/${blogId}/play_audio/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Once the audio is fetched, create a new Audio instance
+                    const audioUrl = URL.createObjectURL(blob);
+                    audio = new Audio(audioUrl);
+                    isAudioLoaded = true;
+
+                    // Hide the speaking alert after audio is loaded
+                    speakingAlert.style.display = "none";
+
+                    // Retry playing audio after loading
+                    playAudio(blogId);
+                })
+                .catch(error => {
+                    console.error('Error fetching audio:', error);
+                    speakingAlert.style.display = "none"; // Hide the alert in case of error
+                    alert('Failed to load audio');
+                });
+            return;  // Exit early as audio is still loading
+        }
+
+        // If audio is already loaded, start/stop playback
+        if (audio) {
+            if (audio.paused) {
+                audio.play();
+                buttonIcon.src = pauseIconUrl; // Change to pause icon
+            } else {
+                audio.pause();
+                buttonIcon.src = playIconUrl; // Change to play icon
+            }
+
+            // Hide the speaking alert when audio starts playing
+            audio.addEventListener('play', () => {
+                speakingAlert.style.display = "none"; // Hide the alert when audio starts playing
+            });
+
+            // Reset to play icon when audio ends
+            audio.addEventListener('ended', () => {
+                buttonIcon.src = playIconUrl; // Reset to play icon
+            });
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends './base/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <!-- Content for posts by the author -->
+    <div class="container" style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column;">
+        <h3 class="text-left" style="color: #013553;">Posts by {{ author.username }}</h3><br>
+        <ul style="list-style-type: none; padding: 0;">
+            {% for post in posts %}
+            <li style="margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 15px; display: flex; align-items: center;">
+                
+                <!-- Blog Image on the left -->
+                <div style="flex-shrink: 0; margin-right: 20px;">
+                    <a href="{% url 'blogs' post.slug %}">
+                        <img src="{{ post.blog_image.url }}" alt="{{ post.title }}" style="width: 100px; height: 100px; border-radius: 5px; object-fit: cover;">
+                    </a>
+                </div>
+
+                <!-- Blog Title and Description -->
+                <div style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <h4 style="margin: 0;">
+                        <a href="{% url 'blogs' post.slug %}" style="text-decoration: none; color: #007bff;">
+                            {{ post.title }}
+                        </a>
+                    </h4>
+
+                    <!-- Longer Description -->
+                    <p style="color: #555; font-size: 14px; margin: 5px 0;">
+                        {{ post.short_description|truncatewords:20 }}
+                    </p>
+                </div>
+
+                <!-- Updated Date on the right -->
+                <div style="color: #888; font-size: 12px; text-align: right; white-space: nowrap;">
+                    <p>{{ post.updated_at|date:"F j, Y" }}</p>
+                </div>
+            </li>
+            {% empty %}
+            <p>No posts uploaded by this author.</p>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="row">
+  <!-- Left sidebar -->
+  {% include './leftsidebar.html' %}
+
+  <!-- Main content -->
+    <div class="col-md-9">
+      <h3 style="color: #013553;">All Categories</h3>
+      <a href="{% url 'add_categories' %}" class="btn btn-dark text-light float-right mb-2">Add New Category</a>
+  
+      <div class="col-4 float-right mb-2">
+        <form action="{% url 'search_categories' %}" method="GET" class="mb-3">
+          <div class="input-group">
+            <input
+              type="text"
+              name="keyword"
+              class="form-control"
+              placeholder="Search Users..."
+              value="{{ search_scope }}"
+            />
+            <button type="submit" class="btn btn-dark">
+              <i class="fa fa-search text-light"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+    <!-- Categories table -->
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Category Name</th>
+          <th>Blogs</th>
+          <th>Created At</th>
+          <th>Updated At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if categories %}
+          {% for cat in categories %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <a href="{% url 'posts_by_category' cat.id %}" style="color: #1c2023;">
+                {{ cat.category_name }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'posts_by_category' cat.id %}" style="color: #1c2023;">
+                {{ cat.blogs_counts }}
+              </a>
+            </td>
+            <td>{{ cat.created_at | date:"Y-m-d H:i" }}</td>
+            <td>{{ cat.updated_at | date:"Y-m-d H:i" }}</td>
+            <td>
+              <a href="{% url 'edit_categories' cat.id %}" class="text-success me-2">
+                <i class="fa fa-edit"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center text-muted">
+            No categories found.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

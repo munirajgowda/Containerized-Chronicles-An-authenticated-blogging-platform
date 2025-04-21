@@ -1,0 +1,89 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="profile-container" style="margin-top: 10px; width: 500px; margin-left: auto; margin-right: auto; display: block; top: 50%; left: 50%;">
+    <h3 class="text-left" style="color: #013553;">Manage Category</h3>
+    <hr />
+    {% load crispy_forms_tags %}
+    <form action="" method="POST" style="width: 500px; margin: auto;">
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+            <label style="display: flex; align-items: center; gap: 5px;">
+                <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this)" />
+                Select All
+            </label>
+        </div>
+        {% csrf_token %}
+        <div id="categories-container" style="display: flex; flex-wrap: wrap; gap: 10px;">
+            {% for choice in form.fields.categories.queryset %}
+            <label 
+                class="category-label" 
+                style="background: {% if choice in form.instance.categories.all %}lightblue{% else %}#f5f5f5{% endif %}; 
+                       border-radius: 20px;
+                       border: 0.5px solid #0000004f; 
+                       padding: 5px 15px; 
+                       text-align: center;
+                       cursor: pointer;
+                       transition: all 0.3s ease;">
+                <input 
+                    type="checkbox" 
+                    name="categories" 
+                    value="{{ choice.id }}" 
+                    style="display: none;"
+                    {% if choice in form.instance.categories.all %}checked{% endif %}
+                    onchange="toggleCategory(this)"
+                >
+                <span class="category-text">
+                    {{ choice.name|default:choice }} {% if choice in form.instance.categories.all %}-{% else %}+{% endif %}
+                </span>
+            </label>
+            {% empty %}
+            <p>No categories available.</p>
+            {% endfor %}
+        </div>
+        <br>
+        <input class="btn btn-warning" type="submit" value="Save">
+        <button type="button" class="btn btn-secondary" onclick="clearSelection()">Clear</button>
+    </form>
+</div>
+
+<script>
+    // JavaScript function to toggle category selection
+    function toggleCategory(checkbox) {
+        const label = checkbox.parentElement; // Get the label element
+        const text = label.querySelector('.category-text');
+
+        if (checkbox.checked) {
+            // Update styles for selected state
+            label.style.background = "lightblue";
+            text.innerText = text.innerText.replace(" +", " -");
+        } else {
+            // Revert styles for unselected state
+            label.style.background = "#f5f5f5";
+            text.innerText = text.innerText.replace(" -", " +");
+        }
+    }
+
+    // JavaScript function to clear all selections
+    function clearSelection() {
+        const checkboxes = document.querySelectorAll('input[name="categories"]');
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                toggleCategory(checkbox); // Update the UI
+            }
+        });
+
+        // Uncheck the "Select All" checkbox
+        document.getElementById("select-all-checkbox").checked = false;
+    }
+
+    // JavaScript function to toggle all categories when "Select All" is clicked
+    function toggleSelectAll(selectAllCheckbox) {
+        const checkboxes = document.querySelectorAll('input[name="categories"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+            toggleCategory(checkbox); // Update the UI
+        });
+    }
+</script>
+{% endblock %}

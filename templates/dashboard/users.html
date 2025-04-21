@@ -1,0 +1,77 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="row">
+  <!-- Left sidebar -->
+  {% include './leftsidebar.html' %}
+
+  <!-- Right sidebar -->
+  <div class="col-md-9">
+    <h3 style="color: #013553;">All Users</h3>
+    <a href="{% url 'add_users' %}" class="btn btn-dark text-light float-right mb-2">Add New User</a>
+
+    <div class="col-4 float-right mb-2">
+      <form action="{% url 'search_users' %}" method="GET" class="mb-3">
+        <div class="input-group">
+          <input
+            type="text"
+            name="keyword"
+            class="form-control"
+            placeholder="Search Users..."
+            value="{{ request.GET.keyword|default:'' }}"
+          />
+          <button type="submit" class="btn btn-dark">
+            <i class="fa fa-search text-light"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>sl.no</th>
+          <th>username</th>
+          <th>Fullname</th>
+          <th>Email</th>
+          <th>General</th>
+          <th>Admin</th>
+          <th>SuperAdmin</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if users %}
+          {% for user in users %}
+          <tr>
+            <th>{{ forloop.counter }}</th>
+            
+            <td><a href="{% url 'userprofile' user.id %}" style="color: black;">{{ user.username }}</a></td>
+            
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>
+              <a href="mailto:{{ author.email }}?subject=Hello%20{{ author.get_full_name|urlencode }}&body=Hi%20{{ author.get_full_name|urlencode }}," 
+              style="color: #0771ae; text-decoration: none;">
+              {{ user.email }}
+           </a>
+            </td>
+
+            <td>{% if user.is_active %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</td>
+            <td>{% if user.is_staff %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</td>
+            <td>{% if user.is_superuser %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</td>
+            <td style="align-items: center;">
+              <a href="{% url 'edit_user' user.id %}" class="text-success"><i class="fa fa-edit"></i></a>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center text-muted">
+            No users available for your search.
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

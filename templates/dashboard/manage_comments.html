@@ -1,0 +1,26 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Left sidebar -->
+    {% include './leftsidebar.html' %}
+
+    {% load crispy_forms_tags %}
+    
+    <!-- Right sidebar content -->
+    <div class="col-md-9">
+        <h3 style="color: #013553;">Manage Comment</h3>
+
+        <!-- Form for editing the comment -->
+        <form method="POST" action="{% url 'manage_comments' comment_id %}" style="max-width: 500px; width: 100%;">
+            {% csrf_token %}
+            {{ form | crispy }}
+
+            <div class="d-flex justify-content-between mt-3">
+                <button type="submit" class="btn btn-success">Save</button>
+                <a href="{% url 'comments' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

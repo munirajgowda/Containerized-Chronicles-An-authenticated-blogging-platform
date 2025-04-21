@@ -1,0 +1,22 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+
+<div class="row">
+    <!-- left sidebar -->
+    {% include './leftsidebar.html' %}
+
+    {% load crispy_forms_tags %}
+    <!-- right sidebar -->
+    <div class="col-md-9">
+        <h3 style="color: #013553;">Add New User</h3>
+
+      <form action="{% url 'add_users' %}" method="POST" style="width: 500px;" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form | crispy }}
+        <button type="submit" class="btn btn-warning">Submit</button>
+      </form>
+    </div>
+</div>
+
+{% endblock %}

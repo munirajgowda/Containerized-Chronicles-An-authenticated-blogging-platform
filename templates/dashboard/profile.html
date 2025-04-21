@@ -1,0 +1,40 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Left sidebar -->
+    {% include './leftsidebar.html' %}
+<div class="author-card" style="text-align: center; margin: 20px auto; width: 300px; border: 1px solid #ddd; border-radius: 10px; padding: 20px; background-color: #f9f9f9;">
+
+    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+        <label style="display: flex; align-items: center; gap: 5px;">
+        </label>
+    </div>
+
+    <!-- Profile Picture -->
+    <div style="margin: 20px;">
+        <!-- Check if the user has uploaded a profile picture -->
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" 
+            style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+            {% else %}
+            <!-- Static default profile picture -->
+            <img src="https://img.icons8.com/?size=100&id=0PXqKKGn88m8&format=png&color=000000" alt="Profile Picture" 
+                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+        {% endif %}
+    </div>
+    
+    <!-- Author Details -->
+    <h4>{{ user.get_full_name }}</h4>
+    <p>@{{ user.username }}</p>
+    <p>
+        <strong>Email:</strong> 
+        <a href="mailto:{{ author.email }}?subject=Hello%20{{ author.get_full_name|urlencode }}&body=Hi%20{{ author.get_full_name|urlencode }}," 
+           style="color: #007bff; text-decoration: none;">
+           {{ user.email }}
+        </a>
+    </p>
+    <a href="{% url 'edit_user' user.id %}" style="align-items: right;" class="text-success"><i class="fa fa-edit"></i> Edit Details</a>
+</div>
+</div>
+{% endblock %}

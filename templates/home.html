@@ -1,0 +1,158 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+<!-- Non-logged-in user: Show the last featured post with the background -->
+{% if not user.is_authenticated %}
+  {% for post in featured_post reversed %}
+    {% if forloop.first %}
+      <a href="{% url 'blogs' post.slug %}" style="text-decoration: none;">
+        <div class="jumbotron p-3 p-md-5 text-white rounded bg-dark" 
+             style="background-image: url({{ post.blog_image.url }}); background-blend-mode: overlay; background-size: cover;">
+          <div class="col-md-8 px-0">
+            <h1 class="display-4 font-italic" style="color: #cccccc;">
+              {{ post.title }}
+            </h1>
+            <p class="lead my-3">{{ post.short_description | truncatewords:20 }}</p>
+            <p class="lead mb-0 text-white font-weight-bold">Continue reading...</p>
+          </div>
+        </div>
+      </a>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+
+<!-- Logged-in user: Interests section -->
+{% if user.is_authenticated %}
+  <h3 style="letter-spacing: 2px; color: #013553;">Posts Based on Your Interests</h3>
+  {% if interest_posts %}
+    <div class="horizontal-scroll-container">
+      {% for post in interest_posts %}
+        <a href="{% url 'blogs' post.slug %}" class="text-decoration-none">
+          <div class="card post-card" 
+               style="background-image: url({{ post.blog_image.url }}); background-size: cover; background-position: center;">
+            <div class="card-body text-white d-flex flex-column justify-content-between">
+              <h3>{{ post.title }}</h3>
+              <small class="text-muted">{{ post.created_at|timesince }} ago | {{ post.author }}</small>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No blogs found related to your interests. <a href="{% url 'managecategory' %}">Add more Categories</a></p>
+  {% endif %}
+{% endif %}
+
+
+<!-- Featured Posts -->
+<h3 style="letter-spacing: 2px; color: #013553;">Featured Posts</h3>
+<div class="horizontal-scroll-container">
+  {% for post in featured_post %}
+    <a href="{% url 'blogs' post.slug %}" class="text-decoration-none">
+      <div class="card post-card" 
+           style="background-image: url({{ post.blog_image.url }}); background-size: cover; background-position: center;">
+        <div class="card-body text-white d-flex flex-column justify-content-between">
+          <h3>{{ post.title }}</h3>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+
+<!-- Recent Articles -->
+<h3 style="letter-spacing: 2px; color: #013553;">Recent Articles</h3>
+<main role="main" class="container p-0">
+  <div class="row">
+    <div class="col-md-10 blog-main">
+      {% for post in posts %}
+        <div class="card border-50 mb-2" style="border-radius: 20px;">
+          <div class="row no-gutters">
+            <div class="col-md-4">
+              <a href="{% url 'blogs' post.slug %}">
+              <img src="{{ post.blog_image.url }}" style="border-radius: 20px;" class="card-img" alt="{{ post.title }}"></a>
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h3><a style="color: rgb(3, 135, 7);" href="{% url 'blogs' post.slug %}">{{ post.title }}</a></h3>
+                <small class="mb-1 text-muted">{{ post.created_at | timesince }} ago | {{ post.author }}</small>
+                <p class="card-text">{{ post.short_description | truncatewords:20 }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">No recent articles available.</p>
+      {% endfor %}
+    </div>
+  </div>
+</main>
+
+
+<style>
+  .horizontal-scroll-container {
+    display: flex;
+    overflow-x: auto; /* Allows horizontal scrolling */
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .horizontal-scroll-container::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .horizontal-scroll-container::-webkit-scrollbar-thumb {
+    background: #cccccc;
+    border-radius: 4px;
+  }
+
+  .post-card {
+    min-width: 360px; /* Larger width for horizontal scrolling */
+    height: 220px; /* Increase height for better display */
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Darker gradient applied here */
+  .post-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); /* Darker gradient */
+    z-index: 1;
+  }
+
+  .post-card .card-body {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 1rem;
+    color: white; /* Ensure text remains visible */
+    z-index: 2; /* Place text above the gradient */
+  }
+
+  .post-card h3 {
+    font-size: 1.4rem; /* Larger font size for titles */
+    font-weight: bold;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .post-card h3 a {
+    text-decoration: none;
+    color: white;
+  }
+</style>
+
+{% endblock %}

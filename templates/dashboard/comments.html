@@ -1,0 +1,85 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Left sidebar -->
+    {% include './leftsidebar.html' %}
+
+    <!-- Right sidebar -->
+    <div class="col-md-9">
+        <h3 style="color: #013553;">My Post Comments</h3>
+        
+        {% if comments %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>sn</th>
+                    <th>User</th>
+                    <th>Blog</th>
+                    <th>Comment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in comments %}
+                {% if comment.blog.author == request.user %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ comment.user.username|default:"Anonymous" }}</td>
+                    <td>{{ comment.blog.title|default:"Untitled" }}</td>
+                    <td>{{ comment.comment }}</td>
+                    <td>
+                        <a href="{% url 'manage_comments' comment.id %}">
+                            <i class="fa fa-edit text-success"></i>
+                        </a>
+                        &nbsp;&nbsp;
+                        <a href="{% url 'delete_comment' comment.id %}"><i class="fa fa-trash text-danger"></i></a>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No comments available for your posts.</p>
+        {% endif %}
+
+        {% if request.user.is_superuser %}
+        <h3 style="color: #013553;">All Comments</h3>
+        
+        {% if comments %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>sn</th>
+                    <th>User</th>
+                    <th>Blog</th>
+                    <th>Comment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in comments %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ comment.user.username|default:"Anonymous" }}</td>
+                    <td>{{ comment.blog.title|default:"Untitled" }}</td>
+                    <td>{{ comment.comment }}</td>
+                    <td>
+                        <a href="{% url 'manage_comments' comment.id %}">
+                            <i class="fa fa-edit text-success"></i>
+                        </a>
+                        &nbsp;&nbsp;
+                        <a href="{% url 'delete_comment' comment.id %}"><i class="fa fa-trash text-danger"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No comments available.</p>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

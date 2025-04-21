@@ -1,0 +1,33 @@
+{% extends 'base/base.html' %}
+
+{% block content %}    
+
+  <h3 style="letter-spacing: 2px; color: #004268;">Category - {{ category }}</h3>
+  <main role="main">
+    <div class="row">
+      <div class="col-md-8 blog-main">
+        {% for post in posts %}
+        <div class="card border-50 mb-2" style="border-radius: 20px;">
+          <div class="row no-gutters">
+            <div class="col-md-4">
+              <a href="{% url 'blogs' post.slug %}">
+                <img src="{{ post.blog_image.url }}" class="card-img" alt="{{ post.title }}" style="border-radius: 20px;">
+              </a>
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h3><a style="color: rgb(3, 135, 7);" href="{% url 'blogs' post.slug %}">{{ post.title }}</a></h3>
+                <small class="mb-1 text-muted">{{ post.created_at | timesince }} ago | {{ post.author }}</small>
+                <p class="card-text">{{ post.short_description | truncatewords:20 }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">No articles available.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

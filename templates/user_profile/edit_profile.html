@@ -1,0 +1,18 @@
+{% extends '../base/base.html' %}
+
+{% block content %}
+<div class="row">
+    {% load crispy_forms_tags %}
+    <div class="profile-container" style="margin-top: 10px; width: 500px; margin-left: auto; margin-right: auto; display: block; top: 50%; left: 50%;">
+        <h3 class="text-left" style="color: #013553;">Edit Profile</h3>
+
+        <form action="{% url 'editprofile' %}" method="POST" style="width: 500px;" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ user_form | crispy }}
+            {{ profile_form | crispy }}
+
+            <button type="submit" class="btn btn-warning">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
