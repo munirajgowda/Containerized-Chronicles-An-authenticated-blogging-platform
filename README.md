@@ -15,7 +15,7 @@ Containerized Chronicles is an authenticated blogging platform developed using D
 - Secure Login System  
 - Simple and Responsive Interface  
 
-**Technologies Used  **
+**Technologies Used**
 - Python  
 - Django    
 - HTML & CSS (Template rendering)  
